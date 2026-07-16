@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from services.deps import get_current_user
+from models.user import User
 
 from database.init_db import init_db
 from api import auth
@@ -25,6 +27,12 @@ def on_startup():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/me")
+def read_me(current_user: User = Depends(get_current_user)):
+    """Protected route — proves the token guard works."""
+    return {"id": current_user.id, "email": current_user.email}
 
 
 app.include_router(auth.router)
