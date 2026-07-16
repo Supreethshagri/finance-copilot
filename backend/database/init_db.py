@@ -1,7 +1,7 @@
 from database.db import Base, engine
 # Import every model so SQLAlchemy registers it before create_all runs.
 from models.user import User  # noqa: F401
-
+from models.transaction import Transaction  # noqa: F401
 
 def init_db():
     """Creates all tables that don't exist yet. Safe to run repeatedly."""

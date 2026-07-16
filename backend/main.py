@@ -2,14 +2,18 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from services.deps import get_current_user
 from models.user import User
-
 from database.init_db import init_db
-from api import auth
+from api import auth, upload
+
+
 
 app = FastAPI(title="AI Finance Copilot")
 
 # CORS: which frontend origins may call this API. Locked to localhost dev ports
 # for now — NOT "*", which would let any website call your API.
+# ...
+app.include_router(upload.router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://localhost:3000"],
