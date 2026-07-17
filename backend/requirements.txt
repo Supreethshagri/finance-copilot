@@ -16,3 +16,4 @@ langgraph==0.2.62
 python-dotenv==1.0.1
 pydantic[email]
 bcrypt==5.0.0
+reportlab
