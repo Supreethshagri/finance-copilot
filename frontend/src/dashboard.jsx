@@ -147,15 +147,16 @@ export default function Dashboard({ onLogout }) {
             <div className="chart">
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={chartData}>
-                  <XAxis dataKey="name" tick={{ fill: "#8b949e", fontSize: 11 }} />
-                  <YAxis tick={{ fill: "#8b949e", fontSize: 11 }} />
+                  <XAxis dataKey="name" tick={{ fill: "#5a6478", fontSize: 11 }} />
+                  <YAxis tick={{ fill: "#5a6478", fontSize: 11 }} />
                   <Tooltip
-                    contentStyle={{ background: "#161b22", border: "1px solid #30363d" }}
-                  />
+                    contentStyle={{
+                      background: "#10131c", border: "1px solid #1e2436",
+                      borderRadius: 8, fontSize: 13, color: "#e8ecf5",
+  }}
+/>
                   <Bar dataKey="amount">
-                    {chartData.map((_, i) => (
-                      <Cell key={i} fill="#2ea043" />
-                    ))}
+                      {chartData.map((_, i) => <Cell key={i} fill="#6e78ff" />)}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
