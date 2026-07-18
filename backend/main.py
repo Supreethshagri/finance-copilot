@@ -19,7 +19,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://finance-copilot-dnzx.onrender.com/",  # frontend URL
+
+        "https://finance-copilot-dnzx.onrender.com",  # frontend URL
+
     ],
     allow_credentials=True,
     allow_methods=["*"],
