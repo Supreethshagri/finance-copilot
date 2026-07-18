@@ -27,6 +27,8 @@ Rules:
 - ALWAYS include the user_id filter given below in the WHERE clause.
 - For spending questions, remember amount is negative for spends.
 - Use ILIKE for text matching (case-insensitive).
+- Always alias aggregate columns with a readable name, e.g. SELECT SUM(amount) AS total_spent
+- Select only columns relevant to the question. Avoid returning id and created_at unless asked.
 
 {SCHEMA_DESCRIPTION}
 """
