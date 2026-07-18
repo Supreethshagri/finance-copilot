@@ -181,6 +181,35 @@ finance-copilot/
 ```
 
 ---
+---
+
+## Production roadmap
+
+The current version is a working portfolio build. Taking it to production would mean:
+
+**Security hardening**
+- PostgreSQL row-level security plus a read-only database role for the SQL agent, so user isolation is enforced by the database rather than the application layer.
+- Rate limiting on the chat endpoints to bound LLM spend and prevent abuse.
+- Refresh tokens with short-lived access tokens, rather than a single 60-minute token.
+- Structured audit logging of every generated query.
+
+**Reliability**
+- Automated tests: unit tests for the parsing and tax/analytics math, integration tests for each agent, and adversarial tests for the SQL guardrails.
+- Alembic migrations instead of `create_all`, so schema changes are versioned and reversible.
+- Retry and fallback handling for LLM calls, which currently fail the request outright.
+
+**Features**
+- RAG agent over uploaded documents (Form 16, invoices) using pgvector and embeddings, with source citations.
+- OCR ingestion for scanned statements and photographed receipts.
+- Bank transaction reference numbers as the deduplication key, replacing file-level hashing.
+- Recurring transaction and subscription detection.
+- Budget tracking with threshold alerts.
+
+**Operations**
+- Move off the free tier to remove cold starts.
+- Object storage for uploaded files rather than parsing in memory.
+- Observability for agent routing decisions and query latency.
+
 
 ## Notes
 
