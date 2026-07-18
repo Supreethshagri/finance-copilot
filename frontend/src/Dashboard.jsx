@@ -98,7 +98,8 @@ export default function Dashboard({ onLogout, email }) {
   // date/description/amount. Handles aggregates (SUM, COUNT) too.
   function renderRows(rows) {
     if (!rows || rows.length === 0) return null;
-    const cols = Object.keys(rows[0]).filter((c) => c !== "user_id");
+    const HIDDEN = ["user_id", "id", "created_at"];
+    const cols = Object.keys(rows[0]).filter((c) => !HIDDEN.includes(c));
     const isNum = (v) => typeof v === "number";
 
     // Single value (e.g. SUM) -> show as one big metric, not a table.
