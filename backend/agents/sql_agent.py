@@ -24,8 +24,7 @@ Rules:
 - Output ONLY the SQL. No explanation, no markdown, no backticks.
 - Only SELECT statements. Never INSERT/UPDATE/DELETE/DROP/ALTER.
 - Query only the 'transactions' table.
-- ALWAYS include user_id in the SELECT column list (needed for scoping).
-- Do NOT add a user_id filter yourself; the application adds it.
+- ALWAYS include the user_id filter given below in the WHERE clause.
 - For spending questions, remember amount is negative for spends.
 - Use ILIKE for text matching (case-insensitive).
 
@@ -91,22 +90,30 @@ def _wrap_with_where(sql: str, user_id: int) -> str:
 
 def run_sql_agent(question: str, user_id: int, db: Session) -> dict:
     """Convert a question to SQL, secure it, run it, return rows."""
+    system = SYSTEM_PROMPT + f"""
+
+CRITICAL: You MUST include this exact filter in every query's WHERE clause:
+  user_id = {user_id}
+For aggregates (SUM, COUNT, AVG), put it in the WHERE clause, not the SELECT list.
+Example: SELECT SUM(amount) FROM transactions WHERE user_id = {user_id} AND description ILIKE '%swiggy%'
+"""
     response = llm.invoke([
-        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "system", "content": system},
         {"role": "user", "content": question},
     ])
     sql = _clean_sql(response.content)
 
     if not _is_safe_select(sql):
-        return {"error": "Generated query was not a safe read-only SELECT.",
-                "sql": sql}
+        return {"error": "Generated query was not a safe read-only SELECT.", "sql": sql}
 
-    secured_sql = _secure_scope(sql, user_id)
+    # Verify the user filter is actually present — reject if the model omitted it.
+    if f"user_id = {user_id}" not in sql.replace("user_id=", "user_id = "):
+        return {"error": "Query rejected: missing required user scope.", "sql": sql}
 
     try:
-        result = db.execute(text(secured_sql))
+        result = db.execute(text(sql))
         rows = [dict(r._mapping) for r in result]
     except Exception as e:
-        return {"error": f"Query failed: {e}", "sql": secured_sql}
+        return {"error": f"Query failed: {e}", "sql": sql}
 
-    return {"sql": secured_sql, "rows": rows, "row_count": len(rows)}
+    return {"sql": sql, "rows": rows, "row_count": len(rows)}
